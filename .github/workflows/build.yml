@@ -41,12 +41,10 @@ jobs:
         run: |
           echo "Initializing Repo with LineageOS source..."
           PATH="${HOME}/.bin:${PATH}"
-          repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --git-lfs
-          echo "Syncing Repo..."
-          repo sync
+          repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --depth 1 --git-lfs
+          echo "Syncing Repo with optimizations..."
+          repo sync --current-branch --no-tags --no-clone-bundle -j4
           echo "Repo initialization and sync completed."
-
-
 
       - name: Setting Up Build Environment
         run: |
