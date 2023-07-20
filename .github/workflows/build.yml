@@ -40,10 +40,12 @@ jobs:
       - name: Setting Up Local Repo
         run: |
           echo "Initializing Repo with LineageOS source..."
-          ~/bin/repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --git-lfs -v
-          echo "Initialization completed. Starting Repo Sync..."
-          ~/bin/repo sync -v
-          echo "Repo Sync completed."
+          PATH="${HOME}/.bin:${PATH}"
+          repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --git-lfs
+          echo "Syncing Repo..."
+          repo sync
+          echo "Repo initialization and sync completed."
+
 
 
       - name: Setting Up Build Environment
