@@ -39,6 +39,7 @@ jobs:
 
       - name: Setting Up Local Repo
         run: |
+          cd ~/android/lineage
           echo "Initializing Repo with LineageOS source..."
           PATH="${HOME}/.bin:${PATH}"
           repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --depth 1 --git-lfs
@@ -48,6 +49,7 @@ jobs:
 
       - name: Setting Up Build Environment
         run: |
+          cd ~/android/lineage
           mkdir -p device/samsung
           git clone https://github.com/khushtaur3123/android_device_samsung_a7y18lte.git device/samsung/a7y18lte
           mv device/samsung/a7y18lte/a7y18lte/* device/samsung/a7y18lte/
@@ -63,6 +65,7 @@ jobs:
 
       - name: Starting Build Process
         run: |
+          cd ~/android/lineage
           croot && mka bacon
 
       - name: Get current time
