@@ -23,10 +23,11 @@ jobs:
 
       - name: Authenticating "repo" with GitHub Account
         run: |
-          git config --global user.email "[Your_Email_Here]"
-          git config --global user.name "[Your_Username_Here]"
+          git config --global user.email "${{ secrets.GIT_USER_EMAIL }}"
+          git config --global user.name "${{ secrets.GIT_USER_NAME }}"
 
-      - name: Enabling Caching (not sure)
+
+      - name: Enabling Caching
         run: |
           export USE_CCACHE=1
           export CCACHE_EXEC=/usr/bin/ccache
@@ -41,7 +42,14 @@ jobs:
         run: |
           mkdir -p device/samsung
           git clone https://github.com/khushtaur3123/android_device_samsung_a7y18lte.git device/samsung/a7y18lte
-          # Add other repositories like kernel and vendor if they exist. Use the nx508j example above as a guide.
+          mv device/samsung/a7y18lte/a7y18lte/* device/samsung/a7y18lte/
+          rm -r device/samsung/a7y18lte/a7y18lte
+          
+          mkdir -p vendor/samsung
+          git clone https://github.com/khushtaur3123/android_vendor_samsung_a7y18lte.git vendor/samsung/a7y18lte
+          mv vendor/samsung/a7y18lte/a7y18lte/* vendor/samsung/a7y18lte/
+          rm -r vendor/samsung/a7y18lte/a7y18lte
+          
           source build/envsetup.sh
           lunch lineage_a7y18lte-userdebug
 
