@@ -19,8 +19,12 @@ jobs:
 
       - name: Installing "repo" Tool
         run: |
-          curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-          chmod a+x ~/bin/repo
+          echo "Setting up repo tool..."
+          mkdir -p ~/.bin
+          PATH="${HOME}/.bin:${PATH}"
+          curl https://storage.googleapis.com/git-repo-downloads/repo > ~/.bin/repo
+          chmod a+rx ~/.bin/repo
+          echo "Repo tool setup completed."
 
       - name: Authenticating "repo" with GitHub Account
         run: |
@@ -35,8 +39,12 @@ jobs:
 
       - name: Setting Up Local Repo
         run: |
-          ~/bin/repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --git-lfs
-          ~/bin/repo sync
+          echo "Initializing Repo with LineageOS source..."
+          ~/bin/repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --git-lfs -v
+          echo "Initialization completed. Starting Repo Sync..."
+          ~/bin/repo sync -v
+          echo "Repo Sync completed."
+
 
       - name: Setting Up Build Environment
         run: |
