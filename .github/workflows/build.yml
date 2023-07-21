@@ -44,14 +44,14 @@ jobs:
           cd ~/android/lineage
           PATH="${HOME}/.bin:${PATH}"
           repo init --help
-          repo init -u https://github.com/LineageOS/android.git -b lineage-20.0 --git-lfs
+          repo init -u https://github.com/LineageOS/android.git -b lineage-20.0 --depth 1 --git-lfs
 
       - name: Syncing Repo with Optimizations
         run: |
           PATH="${HOME}/.bin:${PATH}"
           echo "Syncing Repo with optimizations..."
           cd ~/android/lineage
-          repo sync --depth 1
+          repo sync
           echo "Repo initialization and sync completed."
 
       - name: Setting Up Samsung Device Dependencies
