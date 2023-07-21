@@ -41,13 +41,13 @@ jobs:
           echo "Initializing Repo with LineageOS source..."
           cd ~/android/lineage
           PATH="${HOME}/.bin:${PATH}"
+          repo init --help
           repo init -u https://github.com/LineageOS/android.git -b lineage-20.0 --git-lfs
 
       - name: Syncing Repo with Optimizations
         run: |
           echo "Syncing Repo with optimizations..."
           cd ~/android/lineage
-          repo init --help
           repo sync
           echo "Repo initialization and sync completed."
 
