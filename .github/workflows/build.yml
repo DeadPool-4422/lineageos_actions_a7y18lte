@@ -37,7 +37,7 @@ jobs:
           export CCACHE_EXEC=/usr/bin/ccache
           ccache -M 25G
 
-      - name: Setting Up Local Repo
+      - name: Build
         run: |
           echo "Initializing Repo with LineageOS source..."
           PATH="${HOME}/.bin:${PATH}"
@@ -45,20 +45,14 @@ jobs:
           echo "Syncing Repo with optimizations..."
           repo sync --current-branch --no-tags --no-clone-bundle -j4 --verbose
           echo "Repo initialization and sync completed."
-
-      - name: Setting Up Build Environment
-        run: |
-          cd ~/android/lineage
           mkdir -p device/samsung
           git clone https://github.com/khushtaur3123/android_device_samsung_a7y18lte.git device/samsung/a7y18lte
           mv device/samsung/a7y18lte/a7y18lte/* device/samsung/a7y18lte/
           rm -r device/samsung/a7y18lte/a7y18lte
-          
           mkdir -p vendor/samsung
           git clone https://github.com/khushtaur3123/android_vendor_samsung_a7y18lte.git vendor/samsung/a7y18lte
           mv vendor/samsung/a7y18lte/a7y18lte/* vendor/samsung/a7y18lte/
           rm -r vendor/samsung/a7y18lte/a7y18lte
-          
           source build/envsetup.sh
           lunch lineage_a7y18lte-userdebug
 
