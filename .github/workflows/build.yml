@@ -20,8 +20,9 @@ jobs:
       - name: Installing "repo" Tool and Git LFS
         run: |
           cd ~/android/lineage
-          sudo apt update
-          sudo apt install -y git-lfs repo
+          sudo apt install nala
+          sudo nala upgrade -y
+          sudo nala install -y git-lfs repo
           git lfs install
 
       - name: Authenticating "repo" with GitHub Account
