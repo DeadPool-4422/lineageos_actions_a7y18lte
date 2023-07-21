@@ -44,7 +44,7 @@ jobs:
         run: |
           echo "Syncing Repo with optimizations..."
           cd ~/android/lineage
-          repo sync
+          repo sync --verbose
           echo "Repo initialization and sync completed."
 
       - name: Setting Up Samsung Device Dependencies
