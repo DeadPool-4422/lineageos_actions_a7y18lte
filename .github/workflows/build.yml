@@ -19,12 +19,8 @@ jobs:
           
       - name: Installing "repo" Tool and Git LFS
         run: |
-          sudo nala install -y git-lfs
+          sudo apt install -y git-lfs repo
           git lfs install
-          mkdir -p ~/.bin
-          PATH="${HOME}/.bin:${PATH}"
-          curl https://storage.googleapis.com/git-repo-downloads/repo > ~/.bin/repo
-          chmod a+rx ~/.bin/repo
 
       - name: Authenticating "repo" with GitHub Account
         run: |
