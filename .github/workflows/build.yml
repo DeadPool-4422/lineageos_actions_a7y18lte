@@ -5,6 +5,8 @@ on: workflow_dispatch
 jobs:
   build-for-a7y18lte:
     runs-on: ubuntu-latest
+    container:
+      image: debian:testing
     steps:
       - name: Setting up Build Directories
         run: |
