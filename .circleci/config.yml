@@ -1,0 +1,133 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/ubuntu:20.04
+
+    steps:
+      - checkout
+      
+      - run:
+          name: Setting up Build Directories
+          command: |
+            mkdir ~/bin
+            mkdir -p ~/android/lineage
+            cd ~/android/lineage
+
+      - run:
+          name: Installing Dependencies from Apt
+          command: |
+            sudo apt update
+            sudo apt install -y openjdk-8-jdk libwxgtk3.0-gtk3-dev jq nala bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev
+
+      - run:
+          name: Installing "repo" Tool and Git LFS
+          command: |
+            mkdir -p ~/.bin
+            PATH="${HOME}/.bin:${PATH}"
+            curl https://storage.googleapis.com/git-repo-downloads/repo > ~/.bin/repo
+            chmod a+rx ~/.bin/repo
+            sudo apt install -y git-lfs
+            git lfs install
+
+      - run:
+          name: Authenticating "repo" with GitHub Account
+          command: |
+            git config --global user.email "$GIT_USER_EMAIL"
+            git config --global user.name "$GIT_USER_NAME"
+
+      - run:
+          name: Enabling Caching
+          command: |
+            export USE_CCACHE=1
+            export CCACHE_EXEC=/usr/bin/ccache
+            ccache -M 25G
+
+      - run:
+          name: Initializing Repo with LineageOS Source
+          command: |
+            cd ~/android/lineage
+            PATH="${HOME}/.bin:${PATH}"
+            repo init -u https://github.com/LineageOS/android.git -b lineage-20.0 --depth 1 --git-lfs
+
+      - run:
+          name: Syncing Repo with Optimizations
+          command: |
+            cd ~/android/lineage
+            PATH="${HOME}/.bin:${PATH}"
+            repo sync
+
+      - run:
+          name: Setting Up Samsung Device Dependencies
+          command: |
+            cd ~/android/lineage
+            mkdir -p device/samsung
+            git clone https://github.com/khushtaur3123/android_device_samsung_a7y18lte.git device/samsung/a7y18lte
+            mv device/samsung/a7y18lte/a7y18lte/* device/samsung/a7y18lte/
+            rm -r device/samsung/a7y18lte/a7y18lte
+
+      - run:
+          name: Setting Up Samsung Vendor Dependencies
+          command: |
+            cd ~/android/lineage
+            mkdir -p vendor/samsung
+            git clone https://github.com/khushtaur3123/android_vendor_samsung_a7y18lte.git vendor/samsung/a7y18lte
+            mv vendor/samsung/a7y18lte/a7y18lte/* vendor/samsung/a7y18lte/
+            rm -r vendor/samsung/a7y18lte/a7y18lte
+
+      - run:
+          name: Setting Up Build Environment
+          command: |
+            cd ~/android/lineage
+            source build/envsetup.sh
+            lunch lineage_a7y18lte-userdebug
+
+      - run:
+          name: Starting Build Process
+          command: |
+            cd ~/android/lineage
+            croot && mka bacon
+
+      - run:
+          name: Get current time
+          command: echo "export CURRENT_TIME=$(date +'%D-%M-%Y')" >> $BASH_ENV
+
+      - run:
+          name: Create GitHub Release and Upload Assets
+          command: |
+            RELEASE_RESPONSE=$(curl --data \
+              '{
+                "tag_name": "v1.0",
+                "name": "Auto Build '$CURRENT_TIME'",
+                "body": "This is an Automatic Release by CircleCI.",
+                "prerelease": false
+              }' \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -X POST https://api.github.com/repos/DeadPool-4422/lineageos_actions_a7y18lte/releases)
+
+            UPLOAD_URL=$(echo $RELEASE_RESPONSE | jq -r .upload_url | sed -e "s/{?name,label}//")
+
+            # Error check
+            if [[ "$UPLOAD_URL" == "null" ]]; then
+              echo "Failed to create a release. Exiting..."
+              exit 1
+            fi
+
+            curl -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: $(file -b --mime-type $OUT/recovery.img)" \
+              --data-binary "@$OUT/recovery.img" \
+              "$UPLOAD_URL?name=recovery.img"
+
+            ZIP_PATH=$(ls $OUT/lineage-*-a7y18lte.zip)
+
+            curl -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: $(file -b --mime-type $ZIP_PATH)" \
+              --data-binary "@$ZIP_PATH" \
+              "$UPLOAD_URL?name=lineage-a7y18lte.zip"
+
+workflows:
+  version: 2
+  build_and_release:
+    jobs:
+      - build
