@@ -64,6 +64,8 @@ jobs:
             cd ~/android/lineage
             mkdir -p device/samsung
             git clone https://github.com/khushtaur3123/android_device_samsung_a7y18lte.git device/samsung/
+            cd device/samsung
+            repo sync
 
       - run:
           name: Setting Up Samsung Vendor Dependencies
@@ -71,6 +73,8 @@ jobs:
             cd ~/android/lineage
             mkdir -p vendor/samsung
             git clone https://github.com/khushtaur3123/android_vendor_samsung_a7y18lte.git vendor/samsung/
+            cd vendor/samsung
+            repo sync
 
       - run:
           name: Setting Up Build Environment
