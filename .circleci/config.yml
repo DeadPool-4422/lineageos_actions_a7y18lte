@@ -152,7 +152,6 @@ jobs:
           name: Starting Build Process
           command: |
             cd ~/android/lineage_17_1
-            croot
             brunch a7y18lte
 
       - run:
