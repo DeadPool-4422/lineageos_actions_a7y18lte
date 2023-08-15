@@ -36,10 +36,7 @@ jobs:
       - run:
           name: Installing "repo" Tool
           command: |
-            mkdir -p ~/.bin
-            set -x
-            cd ~/.bin
-            wget curl -v https://storage.googleapis.com/git-repo-downloads/repo
+            curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
             chmod a+rx ~/.bin/repo
 
 
