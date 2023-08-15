@@ -47,9 +47,9 @@ jobs:
       - run:
           name: Initializing Repo with LineageOS Source
           command: |
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             PATH="${HOME}/.bin:${PATH}"
-            repo init -u https://github.com/LineageOS/android.git -b lineage-20.0 --depth 1 --git-lfs
+            repo init -u https://github.com/LineageOS/android.git -b lineage-17.1 --depth 1 --git-lfs
 
       - run:
           name: Syncing Repo with Optimizations
@@ -59,7 +59,7 @@ jobs:
             repo sync
 
       - run:
-          name: Setting Up Samsung Device Dependencies
+          name: Setting Up Samsung Device Tree
           command: |
             PATH="${HOME}/.bin:${PATH}"
             cd ~/android/lineage
@@ -67,9 +67,79 @@ jobs:
             git clone https://github.com/khushtaur3123/android_device_samsung_a7y18lte.git device/samsung/
             cd device/samsung
             repo sync
+            
+      - run:
+          name: Setting Up Samsung Device Kernel
+          command: |
+            PATH="${HOME}/.bin:${PATH}"
+            cd ~/android/lineage
+            mkdir -p  kernel/samsung/universal7885
+            git clone https://github.com/AKSharma87/kernel_samsung_a7y18lte.git  kernel/samsung/universal7885
+            cd  kernel/samsung/universal7885
+            repo sync
 
       - run:
-          name: Setting Up Samsung Vendor Dependencies
+          name: Setting Up Samsung Dependencies (SEPolicy)
+          command: |
+            PATH="${HOME}/.bin:${PATH}"
+            cd ~/android/lineage
+            mkdir -p device/samsung_slsi/sepolicy
+            git clone https://github.com/LineageOS/android_device_samsung_slsi_sepolicy.git device/samsung_slsi/sepolicy
+            cd device/samsung_slsi/sepolicy
+            repo sync
+
+      - run:
+          name: Setting Up Samsung Dependencies (Hardware)
+          command: |
+            PATH="${HOME}/.bin:${PATH}"
+            cd ~/android/lineage
+            mkdir -p hardware/samsung
+            git clone https://github.com/LineageOS/android_hardware_samsung.git hardware/samsung
+            cd hardware/samsung
+            repo sync
+
+      - run:
+          name: Setting Up Samsung Dependencies (NFC)
+          command: |
+            PATH="${HOME}/.bin:${PATH}"
+            cd ~/android/lineage
+            mkdir -p hardware/samsung/nfc
+            git clone https://github.com/LineageOS/android_hardware_samsung_nfc.git hardware/samsung/nfc
+            cd hardware/samsung/nfc
+            repo sync
+
+      - run:
+          name: Setting Up Samsung Dependencies (Bluetooth)
+          command: |
+            PATH="${HOME}/.bin:${PATH}"
+            cd ~/android/lineage
+            mkdir -p hardware/samsung_slsi/libbt
+            git clone https://github.com/LineageOS/android_hardware_samsung_slsi_libbt.git hardware/samsung_slsi/libbt
+            cd hardware/samsung_slsi/libbt
+            repo sync
+
+      - run:
+          name: Setting Up Samsung Dependencies (Wi-Fi HAL)
+          command: |
+            PATH="${HOME}/.bin:${PATH}"
+            cd ~/android/lineage
+            mkdir -p hardware/samsung_slsi/scsc_wifibt/wifi_hal
+            git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wifi_hal.git hardware/samsung_slsi/scsc_wifibt/wifi_hal
+            cd hardware/samsung_slsi/scsc_wifibt/wifi_hal
+            repo sync
+
+      - run:
+          name: Setting Up Samsung Dependencies (slsi_scsc_wifibt_wpa_supplicant_lib)
+          command: |
+            PATH="${HOME}/.bin:${PATH}"
+            cd ~/android/lineage
+            mkdir -p hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib
+            git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib.git hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib
+            cd hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib
+            repo sync
+      
+      - run:
+          name: Setting Up Samsung Vendor Tree
           command: |
             PATH="${HOME}/.bin:${PATH}"
             cd ~/android/lineage
