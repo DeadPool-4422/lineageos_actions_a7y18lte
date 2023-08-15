@@ -155,6 +155,8 @@ jobs:
           command: |
             cd ~/android/lineage_17_1
             source build/envsetup.sh
+            croot
+            export ANDROID_MAJOR_VERSION=q
             brunch a7y18lte
 
       - run:
