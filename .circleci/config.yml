@@ -36,9 +36,8 @@ jobs:
       - run:
           name: Installing "repo" Tool
           command: |
-            curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-            chmod a+rx ~/.bin/repo
-
+            curl -L https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+            chmod +x ~/bin/repo
 
       - run:
           name: Initializing Repo with LineageOS Source
