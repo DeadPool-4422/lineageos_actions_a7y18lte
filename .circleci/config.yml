@@ -54,7 +54,7 @@ jobs:
       - run:
           name: Syncing Repo with Optimizations
           command: |
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             PATH="${HOME}/.bin:${PATH}"
             repo sync
 
@@ -62,7 +62,7 @@ jobs:
           name: Setting Up Samsung Device Tree
           command: |
             PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             mkdir -p device/samsung
             git clone https://github.com/khushtaur3123/android_device_samsung_a7y18lte.git device/samsung/
             cd device/samsung
@@ -72,7 +72,7 @@ jobs:
           name: Setting Up Samsung Device Kernel
           command: |
             PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             mkdir -p  kernel/samsung/universal7885
             git clone https://github.com/AKSharma87/kernel_samsung_a7y18lte.git  kernel/samsung/universal7885
             cd  kernel/samsung/universal7885
@@ -82,7 +82,7 @@ jobs:
           name: Setting Up Samsung Dependencies (SEPolicy)
           command: |
             PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             mkdir -p device/samsung_slsi/sepolicy
             git clone https://github.com/LineageOS/android_device_samsung_slsi_sepolicy.git device/samsung_slsi/sepolicy
             cd device/samsung_slsi/sepolicy
@@ -92,7 +92,7 @@ jobs:
           name: Setting Up Samsung Dependencies (Hardware)
           command: |
             PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             mkdir -p hardware/samsung
             git clone https://github.com/LineageOS/android_hardware_samsung.git hardware/samsung
             cd hardware/samsung
@@ -102,7 +102,7 @@ jobs:
           name: Setting Up Samsung Dependencies (NFC)
           command: |
             PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             mkdir -p hardware/samsung/nfc
             git clone https://github.com/LineageOS/android_hardware_samsung_nfc.git hardware/samsung/nfc
             cd hardware/samsung/nfc
@@ -112,7 +112,7 @@ jobs:
           name: Setting Up Samsung Dependencies (Bluetooth)
           command: |
             PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             mkdir -p hardware/samsung_slsi/libbt
             git clone https://github.com/LineageOS/android_hardware_samsung_slsi_libbt.git hardware/samsung_slsi/libbt
             cd hardware/samsung_slsi/libbt
@@ -122,7 +122,7 @@ jobs:
           name: Setting Up Samsung Dependencies (Wi-Fi HAL)
           command: |
             PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             mkdir -p hardware/samsung_slsi/scsc_wifibt/wifi_hal
             git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wifi_hal.git hardware/samsung_slsi/scsc_wifibt/wifi_hal
             cd hardware/samsung_slsi/scsc_wifibt/wifi_hal
@@ -132,7 +132,7 @@ jobs:
           name: Setting Up Samsung Dependencies (slsi_scsc_wifibt_wpa_supplicant_lib)
           command: |
             PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             mkdir -p hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib
             git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib.git hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib
             cd hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib
@@ -142,7 +142,7 @@ jobs:
           name: Setting Up Samsung Vendor Tree
           command: |
             PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             mkdir -p vendor/samsung
             git clone https://github.com/khushtaur3123/android_vendor_samsung_a7y18lte.git vendor/samsung/
             cd vendor/samsung
@@ -151,7 +151,7 @@ jobs:
       - run:
           name: Setting Up Build Environment
           command: |
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             PATH="${HOME}/.bin:${PATH}"
             repo sync
             source build/envsetup.sh
@@ -160,7 +160,7 @@ jobs:
       - run:
           name: Starting Build Process
           command: |
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             croot && mka bacon
 
       - run:
