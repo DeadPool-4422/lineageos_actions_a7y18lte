@@ -12,8 +12,8 @@ jobs:
           name: Setting up Build Directories
           command: |
             mkdir ~/bin
-            mkdir -p ~/android/lineage
-            cd ~/android/lineage
+            mkdir -p ~/android/lineage_17_1
+            cd ~/android/lineage_17_1
 
       - run:
           name: Installing Dependencies from Apt
