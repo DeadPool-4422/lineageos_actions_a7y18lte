@@ -102,7 +102,7 @@ jobs:
             PATH="${HOME}/.bin:${PATH}"
             cd ~/android/lineage_17_1
             mkdir -p hardware/samsung/nfc
-            git clone -b lineage-17.1 https://github.com/LineageOS/android_hardware_samsung_nfc.git hardware/samsung/nfc
+            git clone -b lineage-18.1 https://github.com/LineageOS/android_hardware_samsung_nfc.git hardware/samsung/nfc
             cd hardware/samsung/nfc
 
       - run:
