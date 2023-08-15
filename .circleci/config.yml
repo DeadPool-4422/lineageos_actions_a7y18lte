@@ -1,22 +1,10 @@
 version: 2.1
-
-executors:
-  android-executor:
-    docker:
-      - image: circleci/python:3.7
-
 jobs:
   build:
-    executor: android-executor
+    machine: 
+      image: ubuntu-2004:202104-01
     steps:
-      - checkout
-
-      # Restoring cache
-      - restore_cache:
-          key: ccache-{{ .Environment.CIRCLE_SHA1 }}
-
       - run:
-          name: Setup Swap Space
           command: |
             sudo fallocate -l 12G /swapfile
             sudo chmod 600 /swapfile
@@ -24,7 +12,11 @@ jobs:
             sudo swapon /swapfile
             sudo sysctl vm.swappiness=10
             sudo sysctl vm.vfs_cache_pressure=50
+      - checkout
 
+      # Restoring cache
+      - restore_cache:
+          key: ccache-{{ .Environment.CIRCLE_SHA1 }}
 
       - run:
           name: Setting up Build Directories
