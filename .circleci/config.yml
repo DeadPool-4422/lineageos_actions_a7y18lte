@@ -12,14 +12,16 @@ jobs:
           name: Setting up Build Directories
           command: |
             mkdir ~/bin
-            mkdir -p ~/android/lineage
-            cd ~/android/lineage
+            mkdir -p ~/android/lineage_17_1
+            cd ~/android/lineage_17_1
 
       - run:
           name: Installing Dependencies from Apt
           command: |
-            sudo apt update
+            sudo apt-get update && sudo apt-get upgrade
             sudo apt install -y openjdk-11-jdk libwxgtk3.0-gtk3-dev jq bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev
+            sudo apt install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git git-lfs gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev libelf-dev liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev
+
 
       - run:
           name: Installing "repo" Tool and Git LFS
@@ -47,51 +49,112 @@ jobs:
       - run:
           name: Initializing Repo with LineageOS Source
           command: |
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             PATH="${HOME}/.bin:${PATH}"
-            repo init -u https://github.com/LineageOS/android.git -b lineage-20.0 --depth 1 --git-lfs
+            repo init -u https://github.com/LineageOS/android.git -b lineage-17.1 --depth 1 --git-lfs
 
       - run:
           name: Syncing Repo with Optimizations
           command: |
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             PATH="${HOME}/.bin:${PATH}"
             repo sync
 
       - run:
-          name: Setting Up Samsung Device Dependencies
+          name: Setting Up Samsung Device Tree
           command: |
             PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             mkdir -p device/samsung
             git clone https://github.com/khushtaur3123/android_device_samsung_a7y18lte.git device/samsung/
             cd device/samsung
-            repo sync
-
+            
       - run:
-          name: Setting Up Samsung Vendor Dependencies
+          name: Setting Up Samsung Device Kernel
           command: |
             PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
+            mkdir -p  kernel/samsung/universal7885
+            git clone https://github.com/AKSharma87/kernel_samsung_a7y18lte.git  kernel/samsung/universal7885
+            cd  kernel/samsung/universal7885
+
+      - run:
+          name: Setting Up Samsung Dependencies (SEPolicy)
+          command: |
+            PATH="${HOME}/.bin:${PATH}"
+            cd ~/android/lineage_17_1
+            mkdir -p device/samsung_slsi/sepolicy
+            git clone https://github.com/LineageOS/android_device_samsung_slsi_sepolicy.git device/samsung_slsi/sepolicy
+            cd device/samsung_slsi/sepolicy
+
+      - run:
+          name: Setting Up Samsung Dependencies (Hardware)
+          command: |
+            PATH="${HOME}/.bin:${PATH}"
+            cd ~/android/lineage_17_1
+            mkdir -p hardware/samsung
+            git clone https://github.com/LineageOS/android_hardware_samsung.git hardware/samsung
+            cd hardware/samsung
+
+      - run:
+          name: Setting Up Samsung Dependencies (NFC)
+          command: |
+            PATH="${HOME}/.bin:${PATH}"
+            cd ~/android/lineage_17_1
+            mkdir -p hardware/samsung/nfc
+            git clone https://github.com/LineageOS/android_hardware_samsung_nfc.git hardware/samsung/nfc
+            cd hardware/samsung/nfc
+
+      - run:
+          name: Setting Up Samsung Dependencies (Bluetooth)
+          command: |
+            PATH="${HOME}/.bin:${PATH}"
+            cd ~/android/lineage_17_1
+            mkdir -p hardware/samsung_slsi/libbt
+            git clone https://github.com/LineageOS/android_hardware_samsung_slsi_libbt.git hardware/samsung_slsi/libbt
+            cd hardware/samsung_slsi/libbt
+
+      - run:
+          name: Setting Up Samsung Dependencies (Wi-Fi HAL)
+          command: |
+            PATH="${HOME}/.bin:${PATH}"
+            cd ~/android/lineage_17_1
+            mkdir -p hardware/samsung_slsi/scsc_wifibt/wifi_hal
+            git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wifi_hal.git hardware/samsung_slsi/scsc_wifibt/wifi_hal
+            cd hardware/samsung_slsi/scsc_wifibt/wifi_hal
+
+      - run:
+          name: Setting Up Samsung Dependencies (slsi_scsc_wifibt_wpa_supplicant_lib)
+          command: |
+            PATH="${HOME}/.bin:${PATH}"
+            cd ~/android/lineage_17_1
+            mkdir -p hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib
+            git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib.git hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib
+            cd hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib
+      
+      - run:
+          name: Setting Up Samsung Vendor Tree
+          command: |
+            PATH="${HOME}/.bin:${PATH}"
+            cd ~/android/lineage_17_1
             mkdir -p vendor/samsung
             git clone https://github.com/khushtaur3123/android_vendor_samsung_a7y18lte.git vendor/samsung/
             cd vendor/samsung
-            repo sync
 
       - run:
           name: Setting Up Build Environment
           command: |
-            cd ~/android/lineage
+            cd ~/android/lineage_17_1
             PATH="${HOME}/.bin:${PATH}"
             repo sync
             source build/envsetup.sh
-            lunch lineage_a7y18lte-userdebug
+            breakfast a7y18lte
 
       - run:
           name: Starting Build Process
           command: |
-            cd ~/android/lineage
-            croot && mka bacon
+            cd ~/android/lineage_17_1
+            brunch a7y18lte
 
       - run:
           name: Get current time
