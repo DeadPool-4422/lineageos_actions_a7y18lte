@@ -16,6 +16,17 @@ jobs:
           key: ccache-{{ .Environment.CIRCLE_SHA1 }}
 
       - run:
+          name: Setup Swap Space
+          command: |
+            sudo fallocate -l 12G /swapfile
+            sudo chmod 600 /swapfile
+            sudo mkswap /swapfile
+            sudo swapon /swapfile
+            sudo sysctl vm.swappiness=10
+            sudo sysctl vm.vfs_cache_pressure=50
+
+
+      - run:
           name: Setting up Build Directories
           command: |
             mkdir -p ~/bin
@@ -50,7 +61,7 @@ jobs:
             PATH="${HOME}/.bin:${PATH}"
             repo sync
 
-     - run:
+      - run:
           name: Setting Up Samsung Device Tree
           command: |
             PATH="${HOME}/.bin:${PATH}"
@@ -150,7 +161,7 @@ jobs:
               echo "Error log uploaded to: $IX_URL"
             fi
 
-          - run:
+      - run:
           name: Create GitHub Release and Upload Assets
           command: |
             RELEASE_RESPONSE=$(curl --data \
@@ -192,6 +203,12 @@ jobs:
           key: ccache-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/.ccache
+
+      - run:
+          name: Cleanup Swap Space
+          command: |
+            sudo swapoff /swapfile
+            sudo rm -f /swapfile
 
 workflows:
   version: 2
