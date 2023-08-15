@@ -154,6 +154,7 @@ jobs:
           name: Starting Build Process
           command: |
             cd ~/android/lineage_17_1
+            source build/envsetup.sh
             brunch a7y18lte
 
       - run:
