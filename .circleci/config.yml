@@ -30,8 +30,12 @@ commands:
           mkdir -p ~/lineage/src
           cd ~/lineage/src
           repo init -u https://github.com/LineageOS/android.git -b lineage-20.0
-          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+          git clone https://github.com/LineageOS/android_hardware_samsung.git -b lineage-20.0 hardware/samsung
+          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_libbt.git -b lineage-20.0 hardware/samsung_slsi/libbt
+          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wifi_hal.git -b lineage-20.0 hardware/samsung_slsi/scsc_wifibt/wifi_hal
+          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib.git -b lineage-20.0 hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib
           git clone https://github.com/exynos7885-dev/android_device_samsung_exynos7885-common.git -b lineage-20.0 device/samsung/exynos7885-common
+          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
   build_lineageos:
     steps:
