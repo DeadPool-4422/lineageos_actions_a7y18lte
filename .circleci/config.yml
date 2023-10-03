@@ -10,27 +10,30 @@ jobs:
     executor: build-executor
     steps:
       - checkout
+      - setup_environment
+      - sync_repositories
+      - build_lineageos
 
-      - run:
-          name: Set up environment
-          command: |
-            echo 'export TARGET_DEVICE=a7y18lte' >> $BASH_ENV
+commands:
+  setup_environment:
+    steps:
+      - run: echo 'export TARGET_DEVICE=a7y18lte' >> $BASH_ENV
 
-      - run:
-          name: Sync LineageOS source and required repositories
-          command: |
-            mkdir -p ~/lineage/src
-            cd ~/lineage/src
-            repo init -u https://github.com/LineageOS/android.git -b lineage-20.0
-            repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
-            git clone https://github.com/exynos7885-dev/android_device_samsung_exynos7885-common.git -b lineage-20.0 device/samsung/exynos7885-common
+  sync_repositories:
+    steps:
+      - run: |
+          mkdir -p ~/lineage/src
+          cd ~/lineage/src
+          repo init -u https://github.com/LineageOS/android.git -b lineage-20.0
+          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+          git clone https://github.com/exynos7885-dev/android_device_samsung_exynos7885-common.git -b lineage-20.0 device/samsung/exynos7885-common
 
-      - run:
-          name: Build LineageOS
-          command: |
-            cd ~/lineage/src
-            source build/envsetup.sh
-            brunch a7y18lte
+  build_lineageos:
+    steps:
+      - run: |
+          cd ~/lineage/src
+          source build/envsetup.sh
+          brunch a7y18lte
 
 workflows:
   version: 2
