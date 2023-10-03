@@ -1,218 +1,39 @@
 version: 2.1
+
+executors:
+  build-executor:
+    docker:
+      - image: lineageos4microg/docker-lineage-cicd:latest
+
 jobs:
   build:
-    machine: 
-      image: ubuntu-2004:202104-01
+    executor: build-executor
     steps:
-      - run:
-          command: |
-            sudo fallocate -l 12G /swapfile
-            sudo chmod 600 /swapfile
-            sudo mkswap /swapfile
-            sudo swapon /swapfile
-            sudo sysctl vm.swappiness=10
-            sudo sysctl vm.vfs_cache_pressure=50
       - checkout
 
-      # Restoring cache
-      - restore_cache:
-          key: ccache-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Set up environment
+          command: |
+            echo 'export TARGET_DEVICE=a7y18lte' >> $BASH_ENV
 
       - run:
-          name: Setting up Build Directories
+          name: Sync LineageOS source and required repositories
           command: |
-            mkdir -p ~/bin
-            mkdir -p ~/android/lineage_17_1
-            echo 'export PATH="${HOME}/.bin:${PATH}"' >> $BASH_ENV
-            source $BASH_ENV
-            cd ~/android/lineage_17_1
+            mkdir -p ~/lineage/src
+            cd ~/lineage/src
+            repo init -u https://github.com/LineageOS/android.git -b lineage-20.0
+            repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+            git clone https://github.com/exynos7885-dev/android_device_samsung_exynos7885-common.git -b lineage-20.0 device/samsung/exynos7885-common
 
       - run:
-          name: Installing Dependencies from Apt
+          name: Build LineageOS
           command: |
-            sudo apt update
-            sudo DEBIAN_FRONTEND=noninteractive apt install -y openjdk-11-jdk wget libwxgtk3.0-gtk3-dev jq bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev git-lfs
-      - run:
-          name: Installing "repo" Tool and Git LFS
-          command: |
-            mkdir -p ~/.bin
-            PATH="${HOME}/.bin:${PATH}"
-            curl https://storage.googleapis.com/git-repo-downloads/repo > ~/.bin/repo
-            chmod a+rx ~/.bin/repo
-            sudo apt install -y git-lfs
-            git lfs install
-
-      - run:
-          name: Authenticating "repo" with GitHub Account
-          command: |
-            git config --global user.email "$GIT_USER_EMAIL"
-            git config --global user.name "$GIT_USER_NAME"
-
-      - run:
-          name: Initializing Repo with LineageOS Source
-          command: |
-            cd ~/android/lineage_17_1
-            repo init -u https://github.com/LineageOS/android.git -b lineage-17.1 --depth 1 --git-lfs
-            repo sync
-
-      - run:
-          name: Syncing Repo with Optimizations
-          command: |
-            cd ~/android/lineage_17_1
-            PATH="${HOME}/.bin:${PATH}"
-            repo sync
-
-      - run:
-          name: Setting Up Samsung Device Tree
-          command: |
-            PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage_17_1
-            mkdir -p device/samsung
-            git clone https://github.com/AKSharma87/android_device_samsung_a7y18lte.git device/samsung/
-            cd device/samsung
-            
-      - run:
-          name: Setting Up Samsung Device Kernel
-          command: |
-            PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage_17_1
-            mkdir -p  kernel/samsung/universal7885
-            git clone https://github.com/AKSharma87/kernel_samsung_a7y18lte.git  kernel/samsung/universal7885
-            cd  kernel/samsung/universal7885
-
-      - run:
-          name: Setting Up Samsung Dependencies (SEPolicy)
-          command: |
-            PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage_17_1
-            mkdir -p device/samsung_slsi/sepolicy
-            git clone -b lineage-17.1 https://github.com/LineageOS/android_device_samsung_slsi_sepolicy.git device/samsung_slsi/sepolicy
-            cd device/samsung_slsi/sepolicy
-
-      - run:
-          name: Setting Up Samsung Dependencies (Hardware)
-          command: |
-            PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage_17_1
-            mkdir -p hardware/samsung
-            git clone -b lineage-17.1 https://github.com/LineageOS/android_hardware_samsung.git hardware/samsung
-            cd hardware/samsung
-
-      - run:
-          name: Setting Up Samsung Dependencies (NFC)
-          command: |
-            PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage_17_1
-            mkdir -p hardware/samsung/nfc
-            git clone -b lineage-18.1 https://github.com/LineageOS/android_hardware_samsung_nfc.git hardware/samsung/nfc
-            cd hardware/samsung/nfc
-
-      - run:
-          name: Setting Up Samsung Dependencies (Bluetooth)
-          command: |
-            PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage_17_1
-            mkdir -p hardware/samsung_slsi/libbt
-            git clone -b lineage-17.1 https://github.com/LineageOS/android_hardware_samsung_slsi_libbt.git hardware/samsung_slsi/libbt
-            cd hardware/samsung_slsi/libbt
-
-      - run:
-          name: Setting Up Samsung Dependencies (Wi-Fi HAL)
-          command: |
-            PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage_17_1
-            mkdir -p hardware/samsung_slsi/scsc_wifibt/wifi_hal
-            git clone -b lineage-17.1 https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wifi_hal.git hardware/samsung_slsi/scsc_wifibt/wifi_hal
-            cd hardware/samsung_slsi/scsc_wifibt/wifi_hal
-
-      - run:
-          name: Setting Up Samsung Dependencies (slsi_scsc_wifibt_wpa_supplicant_lib)
-          command: |
-            PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage_17_1
-            mkdir -p hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib
-            git clone -b lineage-17.1 https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib.git hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib
-            cd hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib
-      
-      - run:
-          name: Setting Up Samsung Vendor Tree
-          command: |
-            PATH="${HOME}/.bin:${PATH}"
-            cd ~/android/lineage_17_1
-            mkdir -p vendor/samsung
-            git clone https://github.com/khushtaur3123/android_vendor_samsung_a7y18lte.git vendor/samsung/
-            cd vendor/samsung
-
-      - run:
-          name: Setting Up Build Environment
-          command: |
-            trap 'tail -n 100 ~/android/lineage_17_1/out/build.log > ~/android/lineage_17_1/out/error_log.txt' ERR
-            cd ~/android/lineage_17_1
-            PATH="${HOME}/.bin:${PATH}"
-            repo sync
+            cd ~/lineage/src
             source build/envsetup.sh
-            breakfast a7y18lte
             brunch a7y18lte
-
-      - run:
-          name: Upload Build Error Log to ix.io
-          command: |
-            if [ -f ~/android/lineage_17_1/out/error_log.txt ]; then
-              IX_URL=$(curl -s -F 'f:1=<~/android/lineage_17_1/out/error_log.txt' ix.io)
-              echo "Error log uploaded to: $IX_URL"
-            fi
-
-      - run:
-          name: Create GitHub Release and Upload Assets
-          command: |
-            RELEASE_RESPONSE=$(curl --data \
-              '{
-                "tag_name": "v1.0",
-                "name": "Auto Build '$CURRENT_TIME'",
-                "body": "This is an Automatic Release by CircleCI.",
-                "prerelease": false
-              }' \
-              -H "Authorization: token $GITHUB_TOKEN" \
-              -X POST https://api.github.com/repos/DeadPool-4422/lineageos_actions_a7y18lte/releases)
-
-            UPLOAD_URL=$(echo $RELEASE_RESPONSE | jq -r .upload_url | sed -e "s/{?name,label}//")
-
-            # Error check
-            if [[ "$UPLOAD_URL" == "null" ]]; then
-              echo "Failed to create a release. Exiting..."
-              exit 1
-            fi
-
-            curl -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Content-Type: $(file -b --mime-type $OUT/recovery.img)" \
-              --data-binary "@$OUT/recovery.img" \
-              "$UPLOAD_URL?name=recovery.img"
-
-            ZIP_PATH=$(ls $OUT/lineage-*-a7y18lte.zip)
-
-            curl -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Content-Type: $(file -b --mime-type $ZIP_PATH)" \
-              --data-binary "@$ZIP_PATH" \
-              "$UPLOAD_URL?name=lineage-a7y18lte.zip"
-
-      - run:
-          name: Save cache after build
-          command: ccache -s
-          when: always
-
-      - save_cache:
-          key: ccache-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/.ccache
-
-      - run:
-          name: Cleanup Swap Space
-          command: |
-            sudo swapoff /swapfile
-            sudo rm -f /swapfile
 
 workflows:
   version: 2
-  build_and_release:
+  build-lineage:
     jobs:
-      - build
+      - build:
