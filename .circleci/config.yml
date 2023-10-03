@@ -11,6 +11,11 @@ jobs:
     steps:
       - checkout
       - setup_environment
+      - run:
+    name: Configure git user
+    command: |
+        git config --global user.email "you@example.com"
+        git config --global user.name "Your Name"
       - sync_repositories
       - build_lineageos
 
@@ -33,7 +38,7 @@ commands:
       - run: |
           cd ~/lineage/src
           source build/envsetup.sh
-          brunch a7y18lte
+          lunch lineage_a718lte-userdebug m -j$(nproc) bacon
 
 workflows:
   version: 2
