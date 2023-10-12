@@ -29,7 +29,7 @@ commands:
       - run: |
           mkdir -p ~/lineage/src
           cd ~/lineage/src
-          repo init -u https://github.com/LineageOS/android.git -b lineage-20.0
+          repo init -u https://github.com/LineageOS/android.git -b lineage-18.0
           git clone https://github.com/LineageOS/android_hardware_samsung.git hardware/samsung
           git clone https://github.com/LineageOS/android_hardware_samsung_slsi_libbt.git hardware/samsung_slsi/libbt
           git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wifi_hal.git hardware/samsung_slsi/scsc_wifibt/wifi_hal
