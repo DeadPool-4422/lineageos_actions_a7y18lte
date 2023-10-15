@@ -64,6 +64,8 @@ jobs:
       - run: |
           mkdir -p ~/android/lineage/src
           cd ~/android/lineage/src
+          git config --global user.email "youremail@example.com"
+          git config --global user.name "your-username"
           repo init -u https://github.com/LineageOS/android.git -b << parameters.branch_username >> --git-lfs
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
