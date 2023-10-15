@@ -80,8 +80,8 @@ commands:
       - run:
           name: Configure git user
           command: |
-              git config --global user.email "<< parameters.email >>"
-              git config --global user.name "<< parameters.username >>"
+              git config --global user.email "<< parameters.git_email >>"
+              git config --global user.name "<< parameters.git_username >>"
 
   install_git_lfs:
     steps:
