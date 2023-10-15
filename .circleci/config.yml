@@ -18,6 +18,9 @@ executors:
   build-executor:
     docker:
       - image: lineageos4microg/docker-lineage-cicd:latest
+    environment:
+      GIT_EMAIL: ${GIT_USER_EMAIL}
+      GIT_USERNAME: ${GIT_USER_NAME}
 
 jobs:
   setup:
