@@ -4,9 +4,6 @@ parameters:
   branch_username:
     type: string
     default: "lineage-18.1"
-  target_device:
-    type: string
-    default: "a7y18lte"
 
 executors:
   build-executor:
@@ -47,6 +44,10 @@ jobs:
       - install_git_lfs
 
   setup:
+    parameters:
+      target_device:
+        type: string
+        default: "a7y18lte"
     executor: build-executor
     steps:
       - checkout
@@ -113,3 +114,4 @@ workflows:
       - build_lineage:
           requires:
             - clone_git_repos
+            
