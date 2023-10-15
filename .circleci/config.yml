@@ -37,7 +37,7 @@ jobs:
       - run: |
           mkdir -p ~/android/lineage/src
           cd ~/android/lineage/src
-          repo init -u https://github.com/LineageOS/android.git -b << parameters.branch_name >> --git-lfs
+          repo init -u https://github.com/LineageOS/android.git -b << parameters.branch_username >> --git-lfs
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
 clone_git_repos:
