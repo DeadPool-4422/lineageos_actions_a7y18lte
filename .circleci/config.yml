@@ -96,14 +96,16 @@ commands:
     parameters:
       email:
         type: string
+        default: "you@example.com"
       username:
         type: string
+        default: "Your Name"
     steps:
       - run:
           name: Configure git user
           command: |
-              git config --global user.email "<< parameters.git_email >>"
-              git config --global user.name "<< parameters.git_username >>"
+              git config --global user.email "<< parameters.email >>"
+              git config --global user.name "<< parameters.username >>"
 
   install_git_lfs:
     steps:
