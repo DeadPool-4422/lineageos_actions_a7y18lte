@@ -7,7 +7,7 @@ parameters:
   git_email:
     type: string
     default: "you@example.com"
-  git_name:
+  git_username:
     type: string
     default: "Your Name"
   target_device:
@@ -28,7 +28,7 @@ jobs:
           device_name: << parameters.target_device >>
       - configure_git:
           email: << parameters.git_email >>
-          user_name: << parameters.git_name >>
+          username: << parameters.git_username >>
       - install_git_lfs
       
   sync_repo:
@@ -81,7 +81,7 @@ commands:
           name: Configure git user
           command: |
               git config --global user.email "<< parameters.email >>"
-              git config --global user.name "<< parameters.user_name >>"
+              git config --global user.name "<< parameters.username >>"
 
   install_git_lfs:
     steps:
