@@ -4,12 +4,6 @@ parameters:
   branch_username:
     type: string
     default: "lineage-18.1"
-  git_email:
-    type: string
-    default: "you@example.com"
-  git_username:
-    type: string
-    default: "Your Name"
   target_device:
     type: string
     default: "a7y18lte"
@@ -22,28 +16,43 @@ executors:
       GIT_EMAIL: ${GIT_USER_EMAIL}
       GIT_USERNAME: ${GIT_USER_NAME}
 
-jobs:
-  setup:
+commands:
+  setup_environment:
     parameters:
-      git_email:
+      device_name:
         type: string
-        default: "you@example.com"
-      git_username:
-        type: string
-        default: "Your Name"
-      target_device:
-        type: string
-        default: "a7y18lte"
+    steps:
+      - run: echo 'export TARGET_DEVICE=<< parameters.device_name >>' >> $BASH_ENV
+
+  configure_git:
+    steps:
+      - run:
+          name: Configure git user
+          command: |
+              git config --global user.email "${GIT_EMAIL}"
+              git config --global user.name "${GIT_USERNAME}"
+
+  install_git_lfs:
+    steps:
+      - run:
+          name: Install git-lfs
+          command: |
+              git lfs install
+
+jobs:
+  initial_setup:
+    executor: build-executor
+    steps:
+      - configure_git
+      - install_git_lfs
+
+  setup:
     executor: build-executor
     steps:
       - checkout
       - setup_environment:
           device_name: << parameters.target_device >>
-      - configure_git:
-          email: << parameters.git_email >>
-          username: << parameters.git_username >>
-      - install_git_lfs
-      
+
   sync_repo:
     parameters:
       branch_username:
@@ -87,41 +96,14 @@ jobs:
           lunch lineage_<< parameters.target_device >>-userdebug
           m -j$(nproc) bacon
 
-commands:
-  setup_environment:
-    parameters:
-      device_name:
-        type: string
-    steps:
-      - run: echo 'export TARGET_DEVICE=<< parameters.device_name >>' >> $BASH_ENV
-
-  configure_git:
-    parameters:
-      email:
-        type: string
-        default: "you@example.com"
-      username:
-        type: string
-        default: "Your Name"
-    steps:
-      - run:
-          name: Configure git user
-          command: |
-              git config --global user.email "<< parameters.email >>"
-              git config --global user.name "<< parameters.username >>"
-
-  install_git_lfs:
-    steps:
-      - run:
-          name: Install git-lfs
-          command: |
-              git lfs install
-
 workflows:
   version: 2
   build-lineage:
     jobs:
-      - setup
+      - initial_setup
+      - setup:
+          requires:
+            - initial_setup
       - sync_repo:
           requires:
             - setup
@@ -131,4 +113,3 @@ workflows:
       - build_lineage:
           requires:
             - clone_git_repos
-            
