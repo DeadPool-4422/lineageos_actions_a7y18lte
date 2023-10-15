@@ -74,7 +74,7 @@ commands:
     parameters:
       email:
         type: string
-      name:
+      username:
         type: string
     steps:
       - run:
