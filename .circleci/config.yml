@@ -21,6 +21,16 @@ executors:
 
 jobs:
   setup:
+    parameters:
+      git_email:
+        type: string
+        default: "you@example.com"
+      git_username:
+        type: string
+        default: "Your Name"
+      target_device:
+        type: string
+        default: "a7y18lte"
     executor: build-executor
     steps:
       - checkout
@@ -32,6 +42,10 @@ jobs:
       - install_git_lfs
       
   sync_repo:
+    parameters:
+      branch_username:
+        type: string
+        default: "lineage-18.1"
     executor: build-executor
     steps:
       - run: |
@@ -40,20 +54,28 @@ jobs:
           repo init -u https://github.com/LineageOS/android.git -b << parameters.branch_username >> --git-lfs
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
-clone_git_repos:
-  executor: build-executor
-  steps:
-    - run: |
-        git clone https://github.com/LineageOS/android_hardware_samsung hardware/samsung -b << parameters.branch_username >>
-        git clone https://github.com/LineageOS/android_hardware_samsung_slsi_libbt hardware/samsung_slsi/libbt -b << parameters.branch_username >>
-        git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wifi_hal hardware/samsung_slsi/scsc_wifibt/wifi_hal -b << parameters.branch_username >>
-        git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib -b << parameters.branch_username >>
-        git clone https://github.com/exynos7885-dev/android_device_samsung_exynos7885-common device/samsung/exynos7885-common -b << parameters.branch_username >>
-        git clone https://github.com/exynos7885-dev/android_device_samsung_a7y18lte device/samsung/a7y18lte -b << parameters.branch_username >>
-        git clone https://github.com/exynos7885-dev/android_vendor_samsung_exynos7885-common vendor/samsung/exynos7885 -b << parameters.branch_username >>
-        git clone https://github.com/exynos7885-dev/android_kernel_samsung_exynos7885 kernel/samsung -b << parameters.branch_username >>
-        
+  clone_git_repos:
+    parameters:
+      branch_username:
+        type: string
+        default: "lineage-18.1"
+    executor: build-executor
+    steps:
+      - run: |
+          git clone https://github.com/LineageOS/android_hardware_samsung hardware/samsung -b << parameters.branch_username >>
+          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_libbt hardware/samsung_slsi/libbt -b << parameters.branch_username >>
+          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wifi_hal hardware/samsung_slsi/scsc_wifibt/wifi_hal -b << parameters.branch_username >>
+          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib -b << parameters.branch_username >>
+          git clone https://github.com/exynos7885-dev/android_device_samsung_exynos7885-common device/samsung/exynos7885-common -b << parameters.branch_username >>
+          git clone https://github.com/exynos7885-dev/android_device_samsung_a7y18lte device/samsung/a7y18lte -b << parameters.branch_username >>
+          git clone https://github.com/exynos7885-dev/android_vendor_samsung_exynos7885-common vendor/samsung/exynos7885 -b << parameters.branch_username >>
+          git clone https://github.com/exynos7885-dev/android_kernel_samsung_exynos7885 kernel/samsung -b << parameters.branch_username >>
+
   build_lineage:
+    parameters:
+      target_device:
+        type: string
+        default: "a7y18lte"
     executor: build-executor
     steps:
       - run: |
@@ -106,3 +128,4 @@ workflows:
       - build_lineage:
           requires:
             - clone_git_repos
+            
