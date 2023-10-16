@@ -30,8 +30,8 @@ jobs:
             git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib -b lineage-18.1
             git clone https://github.com/exynos7885-dev/android_device_samsung_exynos7885-common device/samsung/exynos7885-common -b lineage-18.1
             git clone https://github.com/exynos7885-dev/android_device_samsung_a7y18lte device/samsung/a7y18lte -b lineage-18.1
-            git clone https://github.com/exynos7885-dev/android_vendor_samsung_exynos7885-common vendor/samsung/exynos7885 -b lineage-18.1
-            git clone https://github.com/exynos7885-dev/android_kernel_samsung_exynos7885 kernel/samsung -b lineage-18.1
+            git clone https://github.com/exynos7885-dev/android_vendor_samsung_exynos7885-common vendor/samsung/exynos7885-common -b lineage-18.1
+            git clone https://github.com/exynos7885-dev/android_kernel_samsung_exynos7885 kernel/samsung/exynos7885 -b lineage-18.1
             source build/envsetup.sh
             lunch lineage_a7y18lte-userdebug
             m -j$(nproc) bacon
