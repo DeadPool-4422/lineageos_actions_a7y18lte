@@ -61,15 +61,11 @@ jobs:
             git clone https://github.com/${TARGET_ORG}/android_vendor_${TARGET_VENDOR}_${TARGET_CUSTOM_DEVICE_VENDOR_REPOS} vendor/${TARGET_VENDOR}/${TARGET_CUSTOM_DEVICE_VENDOR_REPOS} -b $TARGET_BRANCH
             git clone https://github.com/${TARGET_ORG}/android_kernel_${TARGET_VENDOR}_${TARGET_CUSTOM_KERNEL_REPO} kernel/${TARGET_VENDOR}/${TARGET_CUSTOM_KERNEL_REPO} -b $TARGET_BRANCH
       - run:
-          name: Init Device
+          name: Init Device and build LineageOS
           command: |
             cd ~/android/lineage
             source build/envsetup.sh
             lunch lineage_${TARGET_DEVICE}-${TARGET_TYPE}
-      - run:
-          name: Build LineageOS
-          command: |
-            cd ~/android/lineage
             m -j$(nproc) bacon
 
 workflows:
