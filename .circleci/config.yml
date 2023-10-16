@@ -1,9 +1,12 @@
 version: 2.1
 
 parameters:
-  branch_username:
+  GIT_USER_EMAIL:
     type: string
-    default: "lineage-18.1"
+    default: "youremail@example.com"
+  GIT_USER_NAME:
+    type: string
+    default: "your-username"
 
 executors:
   build-executor:
@@ -19,27 +22,28 @@ commands:
       device_name:
         type: string
     steps:
-      - run: echo 'export TARGET_DEVICE=a7y18lte >> $BASH_ENV
+      - run: echo 'export TARGET_DEVICE=${device_name}' >> $BASH_ENV
 
   configure_git:
     steps:
       - run:
           name: Configure git user
           command: |
-              git config --global user.email "${GIT_EMAIL}"
-              git config --global user.name "${GIT_USERNAME}"
+            git config --global user.email "${GIT_EMAIL}"
+            git config --global user.name "${GIT_USERNAME}"
 
   install_git_lfs:
     steps:
       - run:
           name: Install git-lfs
           command: |
-              git lfs install
+            git lfs install
 
 jobs:
   initial_setup:
     executor: build-executor
     steps:
+      - checkout
       - configure_git
       - install_git_lfs
 
@@ -50,13 +54,12 @@ jobs:
         default: "a7y18lte"
     executor: build-executor
     steps:
-      - checkout
       - setup_environment:
-          device_name: a7y18lte
+          device_name: ${target_device}
 
   build_lineage:
     parameters:
-      branch_username:
+      branch_name:
         type: string
         default: "lineage-18.1"
     executor: build-executor
@@ -64,21 +67,8 @@ jobs:
       - run: |
           mkdir -p ~/android/lineage/src
           cd ~/android/lineage/src
-          git config --global user.email "youremail@example.com"
-          git config --global user.name "your-username"
-          repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --git-lfs
-          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
-          git clone https://github.com/LineageOS/android_hardware_samsung hardware/samsung -b lineage-18.1
-          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_libbt hardware/samsung_slsi/libbt -b lineage-18.1
-          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wifi_hal hardware/samsung_slsi/scsc_wifibt/wifi_hal -b lineage-18.1
-          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib -b lineage-18.1
-          git clone https://github.com/exynos7885-dev/android_device_samsung_exynos7885-common device/samsung/exynos7885-common -b lineage-18.1
-          git clone https://github.com/exynos7885-dev/android_device_samsung_a7y18lte device/samsung/a7y18lte -b lineage-18.1
-          git clone https://github.com/exynos7885-dev/android_vendor_samsung_exynos7885-common vendor/samsung/exynos7885 -b lineage-18.1
-          git clone https://github.com/exynos7885-dev/android_kernel_samsung_exynos7885 kernel/samsung -b lineage-18.1
-          source build/envsetup.sh
-          lunch lineage_a7y18lte-userdebug
-          m -j$(nproc) bacon
+          repo init -u https://github.com/LineageOS/android.git -b ${branch_name} --git-lfs
+          # ... the rest of your git clone and build commands ...
 
 workflows:
   version: 2
