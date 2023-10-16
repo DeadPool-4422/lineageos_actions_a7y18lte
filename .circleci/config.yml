@@ -58,7 +58,7 @@ jobs:
           command: |
             cd ~/android/lineage
             for CUSTOM_DEVICE_REPO in ${TARGET_CUSTOM_DEVICE_REPOS[@]}; do git clone https://github.com/${TARGET_ORG}/android_device_${TARGET_VENDOR}_${CUSTOM_DEVICE_REPO} device/${TARGET_VENDOR}/${CUSTOM_DEVICE_REPO} -b $TARGET_BRANCH; done
-            git clone https://github.com/${TARGET_ORG}/android_vendor_${TARGET_VENDOR}_{TARGET_CUSTOM_DEVICE_VENDOR_REPOS} vendor/${TARGET_VENDOR}/{TARGET_CUSTOM_DEVICE_VENDOR_REPOS} -b $TARGET_BRANCH
+            git clone https://github.com/${TARGET_ORG}/android_vendor_${TARGET_VENDOR}_${TARGET_CUSTOM_DEVICE_VENDOR_REPOS} vendor/${TARGET_VENDOR}/${TARGET_CUSTOM_DEVICE_VENDOR_REPOS} -b $TARGET_BRANCH
             git clone https://github.com/${TARGET_ORG}/android_kernel_${TARGET_VENDOR}_${TARGET_CUSTOM_KERNEL_REPO} kernel/${TARGET_VENDOR}/${TARGET_CUSTOM_KERNEL_REPO} -b $TARGET_BRANCH
       - run:
           name: Init Device
