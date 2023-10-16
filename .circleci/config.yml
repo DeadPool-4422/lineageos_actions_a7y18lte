@@ -15,12 +15,12 @@ jobs:
           command: |
             echo 'export TARGET_VENDOR="samsung"' >> $BASH_ENV
             echo 'export TARGET_DEVICE="a7y18lte"' >> $BASH_ENV
-            echo 'export TARGET_TYPE="userdebug" >> $BASH_ENV
+            echo 'export TARGET_TYPE="userdebug"' >> $BASH_ENV
             echo 'export TARGET_BRANCH="lineage-18.1"' >> $BASH_ENV
-            echo 'export TARGET_ORG="exynos7885-dev" >> $BASH_ENV
-            echo 'export TARGET_CUSTOM_DEVICE_REPOS="exynos7885-common a7y18lte" >> $BASH_ENV
-            echo 'export TARGET_CUSTOM_DEVICE_VENDOR_REPOS="exynos7885-common" >> $BASH_ENV
-            echo 'export TARGET_CUSTOM_KERNEL_REPO="exynos7885" >> $BASH_ENV
+            echo 'export TARGET_ORG="exynos7885-dev"' >> $BASH_ENV
+            echo 'export TARGET_CUSTOM_DEVICE_REPOS="exynos7885-common a7y18lte"' >> $BASH_ENV
+            echo 'export TARGET_CUSTOM_DEVICE_VENDOR_REPOS="exynos7885-common"' >> $BASH_ENV
+            echo 'export TARGET_CUSTOM_KERNEL_REPO="exynos7885"' >> $BASH_ENV
       - run:
           name: Setup Git
           command: |
