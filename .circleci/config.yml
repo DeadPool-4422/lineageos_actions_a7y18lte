@@ -58,17 +58,25 @@ jobs:
           device_name: ${target_device}
 
   build_lineage:
-    parameters:
-      branch_name:
-        type: string
-        default: "lineage-18.1"
     executor: build-executor
     steps:
       - run: |
           mkdir -p ~/android/lineage/src
           cd ~/android/lineage/src
-          repo init -u https://github.com/LineageOS/android.git -b ${branch_name} --git-lfs
-          # ... the rest of your git clone and build commands ...
+          repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --git-lfs
+          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+          git clone https://github.com/LineageOS/android_hardware_samsung hardware/samsung -b lineage-18.1
+          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_libbt hardware/samsung_slsi/libbt -b lineage-18.1
+          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wifi_hal hardware/samsung_slsi/scsc_wifibt/wifi_hal -b lineage-18.1
+          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib -b lineage-18.1
+          git clone https://github.com/exynos7885-dev/android_device_samsung_exynos7885-common device/samsung/exynos7885-common -b lineage-18.1
+          git clone https://github.com/exynos7885-dev/android_device_samsung_a7y18lte device/samsung/a7y18lte -b lineage-18.1
+          git clone https://github.com/exynos7885-dev/android_vendor_samsung_exynos7885-common vendor/samsung/exynos7885 -b lineage-18.1
+          git clone https://github.com/exynos7885-dev/android_kernel_samsung_exynos7885 kernel/samsung -b lineage-18.1
+          source build/envsetup.sh
+          lunch lineage_a7y18lte-userdebug
+          m -j$(nproc) bacon
+
 
 workflows:
   version: 2
