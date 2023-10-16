@@ -20,12 +20,14 @@ jobs:
             git lfs install
       - run:
           name: Sync LineageOS sources
+          command: |
             mkdir -p ~/android/lineage
             cd ~/android/lineage
             repo init -u https://github.com/LineageOS/android.git -b $TARGET_BRANCH --git-lfs
             repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
       - run:
           name: Clone LineageOS Common Samsung repos
+          command: |
             git clone https://github.com/LineageOS/android_device_samsung_slsi_sepolicy device/samsung_slsi/sepolicy -b $TARGET_BRANCH
             git clone https://github.com/LineageOS/android_hardware_samsung hardware/samsung -b $TARGET_BRANCH
             git clone https://github.com/LineageOS/android_hardware_samsung_slsi_libbt hardware/samsung_slsi/libbt -b $TARGET_BRANCH
@@ -33,6 +35,7 @@ jobs:
             git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib -b $TARGET_BRANCH
       - run:
           name: Clone Exynos7885 repos
+          command: |
             git clone https://github.com/exynos7885-dev/android_device_samsung_exynos7885-common device/samsung/exynos7885-common -b $TARGET_BRANCH
             git clone https://github.com/exynos7885-dev/android_device_samsung_a7y18lte device/samsung/a7y18lte -b $TARGET_BRANCH
             git clone https://github.com/exynos7885-dev/android_vendor_samsung_exynos7885-common vendor/samsung/exynos7885-common -b $TARGET_BRANCH
