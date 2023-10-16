@@ -66,11 +66,6 @@ jobs:
             cd ~/android/lineage
             source build/envsetup.sh
             lunch lineage_${TARGET_DEVICE}-${TARGET_TYPE}
-      - run:
-          name: Build LineageOS
-          command: |
-            cd ~/android/lineage
-            source build/envsetup.sh
             m -j$(nproc) bacon
 
 workflows:
