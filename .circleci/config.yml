@@ -1,119 +1,69 @@
 version: 2.1
 
-parameters:
-  branch_username:
-    type: string
-    default: "lineage-18.1"
-
 executors:
   build-executor:
     docker:
       - image: lineageos4microg/docker-lineage-cicd:latest
-    environment:
-      GIT_EMAIL: ${GIT_USER_EMAIL}
-      GIT_USERNAME: ${GIT_USER_NAME}
-
-commands:
-  setup_environment:
-    parameters:
-      device_name:
-        type: string
-    steps:
-      - run: echo 'export TARGET_DEVICE=<< parameters.device_name >>' >> $BASH_ENV
-
-  configure_git:
-    steps:
-      - run:
-          name: Configure git user
-          command: |
-              git config --global user.email "${GIT_EMAIL}"
-              git config --global user.name "${GIT_USERNAME}"
-
-  install_git_lfs:
-    steps:
-      - run:
-          name: Install git-lfs
-          command: |
-              git lfs install
 
 jobs:
-  initial_setup:
-    executor: build-executor
-    steps:
-      - configure_git
-      - install_git_lfs
-
-  setup:
-    parameters:
-      target_device:
-        type: string
-        default: "a7y18lte"
+  build_lineage:
     executor: build-executor
     steps:
       - checkout
-      - setup_environment:
-          device_name: << parameters.target_device >>
-
-  sync_repo:
-    parameters:
-      branch_username:
-        type: string
-        default: "lineage-18.1"
-    executor: build-executor
-    steps:
-      - run: |
-          mkdir -p ~/android/lineage/src
-          cd ~/android/lineage/src
-          git config --global user.email "youremail@example.com"
-          git config --global user.name "your-username"
-          repo init -u https://github.com/LineageOS/android.git -b << parameters.branch_username >> --git-lfs
-          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
-
-  clone_git_repos:
-    parameters:
-      branch_username:
-        type: string
-        default: "lineage-18.1"
-    executor: build-executor
-    steps:
-      - run: |
-          git clone https://github.com/LineageOS/android_hardware_samsung hardware/samsung -b << parameters.branch_username >>
-          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_libbt hardware/samsung_slsi/libbt -b << parameters.branch_username >>
-          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wifi_hal hardware/samsung_slsi/scsc_wifibt/wifi_hal -b << parameters.branch_username >>
-          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib -b << parameters.branch_username >>
-          git clone https://github.com/exynos7885-dev/android_device_samsung_exynos7885-common device/samsung/exynos7885-common -b << parameters.branch_username >>
-          git clone https://github.com/exynos7885-dev/android_device_samsung_a7y18lte device/samsung/a7y18lte -b << parameters.branch_username >>
-          git clone https://github.com/exynos7885-dev/android_vendor_samsung_exynos7885-common vendor/samsung/exynos7885 -b << parameters.branch_username >>
-          git clone https://github.com/exynos7885-dev/android_kernel_samsung_exynos7885 kernel/samsung -b << parameters.branch_username >>
-
-  build_lineage:
-    parameters:
-      target_device:
-        type: string
-        default: "a7y18lte"
-    executor: build-executor
-    steps:
-      - run: |
-          cd ~/android/lineage/src
-          source build/envsetup.sh
-          lunch lineage_<< parameters.target_device >>-userdebug
-          m -j$(nproc) bacon
+      - run:
+          name: Setup Environment
+          command: |
+            echo 'export TARGET_VENDOR="samsung"' >> $BASH_ENV
+            echo 'export TARGET_DEVICE="a7y18lte"' >> $BASH_ENV
+            echo 'export TARGET_TYPE="userdebug" >> $BASH_ENV
+            echo 'export TARGET_BRANCH="lineage-18.1"' >> $BASH_ENV
+            echo 'export TARGET_ORG="exynos7885-dev" >> $BASH_ENV
+            echo 'export TARGET_CUSTOM_DEVICE_REPOS="exynos7885-common a7y18lte" >> $BASH_ENV
+            echo 'export TARGET_CUSTOM_DEVICE_VENDOR_REPOS="exynos7885-common" >> $BASH_ENV
+            echo 'export TARGET_CUSTOM_KERNEL_REPO="exynos7885" >> $BASH_ENV
+      - run:
+          name: Setup Git
+          command: |
+            git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git config --global user.name "github-actions[bot]"
+            git lfs install
+      - run:
+          name: Sync LineageOS sources
+          command: |
+            mkdir -p ~/android/lineage
+            cd ~/android/lineage
+            repo init -u https://github.com/LineageOS/android.git -b $TARGET_BRANCH --git-lfs
+            repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+      - run:
+          name: Clone LineageOS Common Samsung repos
+          command: |
+            cd ~/android/lineage
+            git clone https://github.com/LineageOS/android_device_samsung_slsi_sepolicy device/samsung_slsi/sepolicy -b $TARGET_BRANCH
+            git clone https://github.com/LineageOS/android_hardware_samsung hardware/samsung -b $TARGET_BRANCH
+            git clone https://github.com/LineageOS/android_hardware_samsung_slsi_libbt hardware/samsung_slsi/libbt -b $TARGET_BRANCH
+            git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wifi_hal hardware/samsung_slsi/scsc_wifibt/wifi_hal -b $TARGET_BRANCH
+            git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib -b $TARGET_BRANCH
+      - run:
+          name: Clone Exynos7885 repos
+          command: |
+            cd ~/android/lineage
+            for CUSTOM_DEVICE_REPO in ${TARGET_CUSTOM_DEVICE_REPOS[@]}; do git clone https://github.com/${TARGET_ORG}/android_device_${TARGET_VENDOR}_${CUSTOM_DEVICE_REPO} device/${TARGET_VENDOR}/${CUSTOM_DEVICE_REPO} -b $TARGET_BRANCH; done
+            git clone https://github.com/${TARGET_ORG}/android_vendor_${TARGET_VENDOR}_${TARGET_CUSTOM_DEVICE_VENDOR} vendor/${TARGET_VENDOR}/${TARGET_CUSTOM_DEVICE_VENDOR} -b $TARGET_BRANCH
+            git clone https://github.com/${TARGET_ORG}/android_kernel_${TARGET_VENDOR}_${TARGET_CUSTOM_KERNEL_REPO} kernel/${TARGET_VENDOR}/${TARGET_CUSTOM_KERNEL_REPO} -b $TARGET_BRANCH
+      - run:
+          name: Init Device
+          command: |
+            cd ~/android/lineage
+            source build/envsetup.sh
+            lunch lineage_${TARGET_DEVICE}-${TARGET_TYPE}
+      - run:
+          name: Build LineageOS
+          command: |
+            cd ~/android/lineage
+            m -j$(nproc) bacon
 
 workflows:
   version: 2
   build-lineage:
     jobs:
-      - initial_setup
-      - setup:
-          requires:
-            - initial_setup
-      - sync_repo:
-          requires:
-            - setup
-      - clone_git_repos:
-          requires:
-            - sync_repo
-      - build_lineage:
-          requires:
-            - clone_git_repos
-            
+      - build_lineage
