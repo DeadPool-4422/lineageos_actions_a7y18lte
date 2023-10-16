@@ -54,7 +54,7 @@ jobs:
       - run:
           name: Build LineageOS
           command: |
-            cd android/lineage
+            cd ~/android/lineage
             m -j$(nproc) bacon
 
 workflows:
