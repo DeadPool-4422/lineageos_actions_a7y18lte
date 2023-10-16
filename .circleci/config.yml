@@ -21,6 +21,13 @@ jobs:
             echo 'export TARGET_CUSTOM_DEVICE_REPOS="exynos7885-common a7y18lte"' >> $BASH_ENV
             echo 'export TARGET_CUSTOM_DEVICE_VENDOR_REPOS="exynos7885-common"' >> $BASH_ENV
             echo 'export TARGET_CUSTOM_KERNEL_REPO="exynos7885"' >> $BASH_ENV
+            echo 'export TARGET_LINEAGE_COMMON_REPOS=(
+                    "device/samsung_slsi_sepolicy:device/samsung_slsi/sepolicy"
+                    "hardware/samsung"
+                    "hardware/samsung_slsi_libbt:hardware/samsung_slsi/libbt"
+                    "hardware/samsung_slsi_scsc_wifibt_wifi_hal:hardware/samsung_slsi/scsc_wifibt/wifi_hal"
+                    "hardware/samsung_slsi_scsc_wifibt_wpa_supplicant_lib:hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib"
+                   )' >> $BASH_ENV
       - run:
           name: Setup Git
           command: |
@@ -38,11 +45,14 @@ jobs:
           name: Clone LineageOS Common Samsung repos
           command: |
             cd ~/android/lineage
-            git clone https://github.com/LineageOS/android_device_samsung_slsi_sepolicy device/samsung_slsi/sepolicy -b $TARGET_BRANCH
-            git clone https://github.com/LineageOS/android_hardware_samsung hardware/samsung -b $TARGET_BRANCH
-            git clone https://github.com/LineageOS/android_hardware_samsung_slsi_libbt hardware/samsung_slsi/libbt -b $TARGET_BRANCH
-            git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wifi_hal hardware/samsung_slsi/scsc_wifibt/wifi_hal -b $TARGET_BRANCH
-            git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib -b $TARGET_BRANCH
+            # [@Razuuu]: ChatGPT helped me with this crazy thing lmao
+            for TARGET_LINEAGE_COMMON_REPO in "${TARGET_LINEAGE_COMMON_REPOS[@]}"; do
+             source_path="${TARGET_LINEAGE_COMMON_REPO%%:*}"
+             destination_path="${TARGET_LINEAGE_COMMON_REPO#*:}"
+             modified_source_path="android_${source_path//\//_}"
+             
+             git clone https://github.com/LineageOS/${source_path} $destination_path -b $TARGET_BRANCH
+            done
       - run:
           name: Clone Exynos7885 repos
           command: |
