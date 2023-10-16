@@ -70,6 +70,7 @@ jobs:
           name: Build LineageOS
           command: |
             cd ~/android/lineage
+            source build/envsetup.sh
             m -j$(nproc) bacon
 
 workflows:
