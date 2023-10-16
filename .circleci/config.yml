@@ -19,7 +19,7 @@ commands:
       device_name:
         type: string
     steps:
-      - run: echo 'export TARGET_DEVICE=<< parameters.device_name >>' >> $BASH_ENV
+      - run: echo 'export TARGET_DEVICE=a7y18lte >> $BASH_ENV
 
   configure_git:
     steps:
@@ -52,9 +52,9 @@ jobs:
     steps:
       - checkout
       - setup_environment:
-          device_name: << parameters.target_device >>
+          device_name: a7y18lte
 
-  sync_repo:
+  build_lineage:
     parameters:
       branch_username:
         type: string
@@ -66,37 +66,18 @@ jobs:
           cd ~/android/lineage/src
           git config --global user.email "youremail@example.com"
           git config --global user.name "your-username"
-          repo init -u https://github.com/LineageOS/android.git -b << parameters.branch_username >> --git-lfs
+          repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --git-lfs
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
-
-  clone_git_repos:
-    parameters:
-      branch_username:
-        type: string
-        default: "lineage-18.1"
-    executor: build-executor
-    steps:
-      - run: |
-          git clone https://github.com/LineageOS/android_hardware_samsung hardware/samsung -b << parameters.branch_username >>
-          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_libbt hardware/samsung_slsi/libbt -b << parameters.branch_username >>
-          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wifi_hal hardware/samsung_slsi/scsc_wifibt/wifi_hal -b << parameters.branch_username >>
-          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib -b << parameters.branch_username >>
-          git clone https://github.com/exynos7885-dev/android_device_samsung_exynos7885-common device/samsung/exynos7885-common -b << parameters.branch_username >>
-          git clone https://github.com/exynos7885-dev/android_device_samsung_a7y18lte device/samsung/a7y18lte -b << parameters.branch_username >>
-          git clone https://github.com/exynos7885-dev/android_vendor_samsung_exynos7885-common vendor/samsung/exynos7885 -b << parameters.branch_username >>
-          git clone https://github.com/exynos7885-dev/android_kernel_samsung_exynos7885 kernel/samsung -b << parameters.branch_username >>
-
-  build_lineage:
-    parameters:
-      target_device:
-        type: string
-        default: "a7y18lte"
-    executor: build-executor
-    steps:
-      - run: |
-          cd ~/android/lineage/src
+          git clone https://github.com/LineageOS/android_hardware_samsung hardware/samsung -b lineage-18.1
+          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_libbt hardware/samsung_slsi/libbt -b lineage-18.1
+          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wifi_hal hardware/samsung_slsi/scsc_wifibt/wifi_hal -b lineage-18.1
+          git clone https://github.com/LineageOS/android_hardware_samsung_slsi_scsc_wifibt_wpa_supplicant_lib hardware/samsung_slsi/scsc_wifibt/wpa_supplicant_lib -b lineage-18.1
+          git clone https://github.com/exynos7885-dev/android_device_samsung_exynos7885-common device/samsung/exynos7885-common -b lineage-18.1
+          git clone https://github.com/exynos7885-dev/android_device_samsung_a7y18lte device/samsung/a7y18lte -b lineage-18.1
+          git clone https://github.com/exynos7885-dev/android_vendor_samsung_exynos7885-common vendor/samsung/exynos7885 -b lineage-18.1
+          git clone https://github.com/exynos7885-dev/android_kernel_samsung_exynos7885 kernel/samsung -b lineage-18.1
           source build/envsetup.sh
-          lunch lineage_<< parameters.target_device >>-userdebug
+          lunch lineage_a7y18lte-userdebug
           m -j$(nproc) bacon
 
 workflows:
@@ -107,13 +88,6 @@ workflows:
       - setup:
           requires:
             - initial_setup
-      - sync_repo:
-          requires:
-            - setup
-      - clone_git_repos:
-          requires:
-            - sync_repo
       - build_lineage:
           requires:
-            - clone_git_repos
-            
+            - setup
