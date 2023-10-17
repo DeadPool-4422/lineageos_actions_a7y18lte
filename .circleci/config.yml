@@ -30,13 +30,6 @@ jobs:
             git config --global user.name "github-actions[bot]"
             git lfs install
       - run:
-          name: Setup Ccache
-          command: |
-            echo 'export USE_CCACHE=1' >> $BASH_ENV
-            echo 'export CCACHE_EXEC=/usr/bin/ccache' >> $BASH_ENV
-            ccache -M 100
-            ccache -o compression=true
-      - run:
           name: Sync LineageOS sources
           command: |
             mkdir -p ~/android/lineage
