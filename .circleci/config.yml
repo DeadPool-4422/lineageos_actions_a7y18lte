@@ -14,6 +14,7 @@ jobs:
       - run:
           name: Setup Environment
           command: |
+            free -h
             echo 'export TARGET_VENDOR="samsung"' >> $BASH_ENV
             echo 'export TARGET_DEVICE="a7y18lte"' >> $BASH_ENV
             echo 'export TARGET_TYPE="userdebug"' >> $BASH_ENV
