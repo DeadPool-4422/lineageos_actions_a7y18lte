@@ -41,8 +41,8 @@ jobs:
             python --version
             mkdir -p ~/android/lineage
             cd ~/android/lineage
-            python3 repo init -u https://github.com/LineageOS/android.git -b $TARGET_BRANCH --git-lfs
-            python3 repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+            python3 ~/bin/repo init -u https://github.com/LineageOS/android.git -b $TARGET_BRANCH --git-lfs
+            python3 ~/bin/repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
       - run:
           name: Clone LineageOS Common Samsung repos
           command: |
