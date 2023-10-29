@@ -23,20 +23,22 @@ jobs:
             echo 'export TARGET_CUSTOM_DEVICE_REPOS="exynos7885-common a7y18lte"' >> $BASH_ENV
             echo 'export TARGET_CUSTOM_DEVICE_VENDOR_REPOS="exynos7885-common"' >> $BASH_ENV
             echo 'export TARGET_CUSTOM_KERNEL_REPO="exynos7885"' >> $BASH_ENV
+            mkdir -p ~/bin
+            curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+            chmod a+x ~/bin/repo
+            echo 'export PATH=~/bin:$PATH' >> ~/.bashrc
       - run:
           name: Setup Git
           command: |
             sudo apt update
-            sudo apt install git-lfs
+            sudo apt install git-lfs python-is-python3 python3
             git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git config --global user.name "github-actions[bot]"
             git lfs install
       - run:
           name: Sync LineageOS sources
           command: |
-            sudo add-apt-repository universe
-            sudo apt update
-            sudo apt install repo
+            python --version
             mkdir -p ~/android/lineage
             cd ~/android/lineage
             repo init -u https://github.com/LineageOS/android.git -b $TARGET_BRANCH --git-lfs
