@@ -1,14 +1,14 @@
 version: 2.1
 
 executors:
-  machine-executor:
-    machine:
-      image: ubuntu-2004:202010-01
+  build-executor:
+    docker:
+      - image: lineageos4microg/docker-lineage-cicd:latest
     resource_class: large
 
 jobs:
   build_lineage:
-    executor: machine-executor
+    executor: build-executor
     steps:
       - checkout
       - run:
